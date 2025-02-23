@@ -25,7 +25,7 @@ public class studentDaoImplementation implements studentDao {
         @Override
         @Transactional
         public void save(student theStudent) {
-                entityManager.persist(theStudent);
+                entityManager.persist(theStudent); //persist method is used to save the object to the database
         }
 
         //Function for reading student details from database
@@ -40,5 +40,34 @@ public class studentDaoImplementation implements studentDao {
                 TypedQuery<student> myQuery= entityManager.createQuery("from student order by lastName", student.class);
 
                 return myQuery.getResultList();
+        }
+
+        @Override
+        public List<student> findStudentByLastname(String lastname) {
+                //defining parameterized query to be performed . :theLname is a placeholder
+                TypedQuery<student> myQuery= entityManager.createQuery("from student where lastName=:theLname", student.class);
+                myQuery.setParameter("theLname", lastname);
+                return myQuery.getResultList(); //getResultList method returns the result of the query
+        }
+
+        @Override
+        @Transactional
+        public void update(student theStudent) {
+                entityManager.merge(theStudent); // updates the database table with the new values using theStudent instance
+
+        }
+
+        @Override
+        @Transactional
+        public int updateAll() {
+                int numRowsUpdated=entityManager.createQuery("update student set lastName='Upadhyay'").executeUpdate();
+                return numRowsUpdated;
+        }
+
+        @Override
+        @Transactional
+        public void delete(Integer id) {
+                student delStudent=entityManager.find(student.class, id);
+                entityManager.remove(delStudent); //removes the student with the given id from the database
         }
 }
